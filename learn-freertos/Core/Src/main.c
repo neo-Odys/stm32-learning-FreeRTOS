@@ -72,35 +72,29 @@ void StartDefaultTask(void *argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+osMessageQueueId_t mojaKolejkaHandle;
+
 void vTask1(void *argument) {
 
-	volatile unsigned long ulCount;
 
 	for (;;) {
-
-		printf("task 1 here\n");
-
-		osDelay(1000);
-
+		int odbrana;
+		osMessageQueueGet(mojaKolejkaHandle, &odbrana, NULL, osWaitForever);
+		printf("%d \n", odbrana);
+		osDelay(2000);
 	}
 
 }
 void vTask3(void *argument);
 void vTask2(void *pvParameters) {
 
-	volatile unsigned long ulCount;
-	for (ulCount = 0; ulCount < mainDELAY_LOOP_COUNT / 2; ulCount++) {
 
-	}
-
-	osDelay(500);
 	char *pcTaskName;
 	pcTaskName = (char*) pvParameters;
 	for (;;) {
 
-		printf("%s here\n", pcTaskName);
-		osDelay(2000);
-
+		//printf("nie nie wazne\n");
+		osDelay(1000);
 
 	}
 }
@@ -190,6 +184,17 @@ int main(void) {
 
 	osThreadNew(vTask1, NULL, &task1_attributes);
 	osThreadNew(vTask2, (void*) pcTextFroTask2, &task2_attributes);
+
+		mojaKolejkaHandle =  osMessageQueueNew(10, sizeof(int), NULL);
+
+	int elo = 10;
+	osMessageQueuePut(mojaKolejkaHandle, &elo, 1, osWaitForever);
+	elo = 123;
+	osMessageQueuePut(mojaKolejkaHandle, &elo, 1, osWaitForever);
+	elo = 88;
+	osMessageQueuePut(mojaKolejkaHandle, &elo, 1, osWaitForever);
+
+
 	/* USER CODE END RTOS_THREADS */
 
 	/* USER CODE BEGIN RTOS_EVENTS */
